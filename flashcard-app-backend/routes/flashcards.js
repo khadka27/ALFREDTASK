@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Flashcard = require('../models/Flashcard');
 
+// routes/flashcards.js
+const authMiddleware = require('../middleware/auth');
+router.use(authMiddleware);
+
+
 // Utility function: calculates next review date based on the Leitner box
 function getNextReviewDate(box) {
     const now = new Date();

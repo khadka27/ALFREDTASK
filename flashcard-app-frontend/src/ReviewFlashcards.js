@@ -2,18 +2,23 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const ReviewFlashcards = () => {
+const ReviewFlashcards = ({ token }) => {
     const [flashcards, setFlashcards] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [showAnswer, setShowAnswer] = useState(false);
 
     useEffect(() => {
         fetchFlashcards();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const fetchFlashcards = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/flashcards');
+            const res = await axios.get('http://localhost:5000/flashcards', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             // Only include cards due for review (nextReview date <= now)
             const dueFlashcards = res.data.filter(card => new Date(card.nextReview) <= new Date());
             setFlashcards(dueFlashcards);
@@ -27,7 +32,11 @@ const ReviewFlashcards = () => {
     const handleAnswer = async (correct) => {
         const card = flashcards[currentIndex];
         try {
-            await axios.put(`http://localhost:5000/flashcards/${card._id}`, { correct });
+            await axios.put(`http://localhost:5000/flashcards/${card._id}`, { correct }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             // Refresh flashcards list after updating the card
             await fetchFlashcards();
             setShowAnswer(false);

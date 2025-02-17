@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const flashcardRoutes = require('./routes/flashcards');
+const authRoutes = require('./routes/auth');
 require('dotenv').config();
 
 
@@ -12,7 +13,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Routes
+
+// Auth Routes
+app.use('/auth', authRoutes);
+
+// Flashcard Routes
 app.use('/flashcards', flashcardRoutes);
 
 // Connect to MongoDB (replace <your_mongo_uri> with your actual MongoDB connection string)
