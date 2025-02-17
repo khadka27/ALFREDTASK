@@ -15,7 +15,7 @@ app.use('/flashcards', flashcardRoutes);
 
 // Connect to MongoDB (replace <your_mongo_uri> with your actual MongoDB connection string)
 mongoose
-    .connect('<your_mongo_uri>', { useNewUrlParser: true, useUnifiedTopology: true })
+    .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log('MongoDB connected');
         app.listen(5000, () => console.log('Server running on port 5000'));
