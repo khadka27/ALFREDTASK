@@ -8,6 +8,7 @@ const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const backendUrl = process.env.BACKEND_URL;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,7 +19,7 @@ const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
         try {
             // Include the token in the Authorization header
             const res = await axios.post(
-                'http://localhost:5000/flashcards',
+                `${backendUrl}/ flashcards`,
                 { question, answer },
                 {
                     headers: {
@@ -39,9 +40,9 @@ const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
     };
 
     return (
-        <div className={`container mt-4 ${darkMode ? 'text-light' : 'text-dark'}`}>
+        <div className={`container mt - 4 ${darkMode ? 'text-light' : 'text-dark'}`}>
             <div
-                className={`card shadow-lg border ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-white border-light'
+                className={`card shadow - lg border ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-white border-light'
                     }`}
             >
                 <div
@@ -63,7 +64,7 @@ const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
                                 type="text"
                                 value={question}
                                 onChange={(e) => setQuestion(e.target.value)}
-                                className={`form-control ${darkMode ? 'bg-dark text-light border-secondary' : 'border-light'
+                                className={`form - control ${darkMode ? 'bg-dark text-light border-secondary' : 'border-light'
                                     }`}
                                 required
                             />
@@ -73,7 +74,7 @@ const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
                             <textarea
                                 value={answer}
                                 onChange={(e) => setAnswer(e.target.value)}
-                                className={`form-control ${darkMode ? 'bg-dark text-light border-secondary' : 'border-light'
+                                className={`form - control ${darkMode ? 'bg-dark text-light border-secondary' : 'border-light'
                                     }`}
                                 rows="3"
                                 required

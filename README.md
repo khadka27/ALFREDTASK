@@ -1,12 +1,10 @@
-
-
 # FlashLearn - Flashcard Learning App with Leitner System
 
 FlashLearn is a web application that leverages the power of the Leitner System—a spaced repetition technique—to help users learn and retain information more effectively using flashcards. Built with the MERN stack, this app allows users to create, review, and manage flashcards, with features such as user authentication, dark mode, and smooth animations.
 
 ## Features
 
-- **Leitner System**: 
+- **Leitner System**:
   - Flashcards start in Box 1.
   - Correct answers move a flashcard to the next box (with longer review intervals).
   - Incorrect answers reset the flashcard back to Box 1.
@@ -38,7 +36,7 @@ FlashLearn is a web application that leverages the power of the Leitner System�
 
 ## Tech Stack
 
-- **Frontend**: 
+- **Frontend**:
   - React, React Router, Axios, React Bootstrap, Framer Motion
 - **Backend**:
   - Node.js, Express, MongoDB, Mongoose
@@ -108,7 +106,7 @@ flashlearn/
    ```bash
    node server.js
    ```
-   
+
    The backend server will run on port `5000`.
 
 ### Frontend Setup
@@ -138,15 +136,12 @@ flashlearn/
 - **User Authentication:**
   - Navigate to the Login or Signup page to create an account or log in.
   - Upon successful login, a JWT is stored in `localStorage` and used to authenticate subsequent API requests.
-  
 - **Review Flashcards:**
   - Once logged in, navigate to the "Review" section to see flashcards due for review.
   - Use the "Show Answer" button to reveal the answer.
   - Mark the flashcard as "Got it right" or "Got it wrong" to update its position in the Leitner system.
-  
 - **Add Flashcards:**
   - Use the "Add" section to create new flashcards.
-  
 - **Dark Mode:**
   - Toggle between light and dark themes using the switch in the Navbar.
 
@@ -154,7 +149,6 @@ flashlearn/
 
 - **Backend:**  
   Deploy to platforms like Heroku, Render, or any Node.js hosting service.
-  
 - **Frontend:**  
   Deploy to services like Vercel, Netlify, or similar platforms.
 
@@ -166,7 +160,6 @@ This project is licensed under the MIT License.
 
 - Special thanks to the developers of the MERN stack and all open-source contributors.
 - Inspired by spaced repetition and the Leitner System for effective learning.
-
 
 ---
 

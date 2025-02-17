@@ -9,12 +9,13 @@ const Login = ({ setToken }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const backendUrl = process.env.BACKEND_URL;
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
         try {
-            const res = await axios.post('http://localhost:5000/auth/login', { username, password });
+            const res = await axios.post(`${backendUrl}/login`, { username, password });
             localStorage.setItem('token', res.data.token);
             setToken(res.data.token);
             navigate('/review'); // Redirect after login
