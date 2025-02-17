@@ -1,49 +1,44 @@
-// routes/flashcards.js
 const express = require('express');
 const router = express.Router();
 const Flashcard = require('../models/Flashcard');
 
-// Utility function to calculate next review date based on the box level
+// Utility function: calculates next review date based on the Leitner box
 function getNextReviewDate(box) {
     const now = new Date();
-    // Define intervals (in days) for each box (customize as needed)
-    const intervals = {
-        1: 1,   // Box 1: review in 1 day
-        2: 2,   // Box 2: review in 2 days
-        3: 4,   // Box 3: review in 4 days
-        4: 8,   // Box 4: review in 8 days
-        5: 16,  // Box 5: review in 16 days
-    };
-    const days = intervals[box] || 1;
-    now.setDate(now.getDate() + days);
+    const intervals = { 1: 1, 2: 2, 3: 4, 4: 8, 5: 16 };
+    now.setDate(now.getDate() + (intervals[box] || 1));
     return now;
 }
 
-// POST /flashcards → Add a new flashcard
+// POST /flashcards → Create a new flashcard
 router.post('/', async (req, res) => {
     try {
+        console.log("Request body:", req.body);
         const { question, answer } = req.body;
+        if (!question || !answer) {
+            throw new Error("Both question and answer are required.");
+        }
         const newFlashcard = new Flashcard({ question, answer });
         const savedFlashcard = await newFlashcard.save();
         res.status(201).json(savedFlashcard);
     } catch (err) {
+        console.error("Error in POST /flashcards:", err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// GET /flashcards → Get all flashcards (optionally filter by due date)
+// GET /flashcards → Get all flashcards
 router.get('/', async (req, res) => {
     try {
-        // Optionally, filter to return only flashcards due for review:
         const flashcards = await Flashcard.find();
         res.json(flashcards);
     } catch (err) {
+        console.error("Error in GET /flashcards:", err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// PUT /flashcards/:id → Update a flashcard based on user answer
-// Expecting a payload: { correct: true/false }
+// PUT /flashcards/:id → Update flashcard based on answer correctness
 router.put('/:id', async (req, res) => {
     try {
         const { correct } = req.body;
@@ -51,19 +46,12 @@ router.put('/:id', async (req, res) => {
         if (!flashcard) {
             return res.status(404).json({ error: 'Flashcard not found' });
         }
-
-        // Update Leitner box level
-        if (correct) {
-            flashcard.box = flashcard.box + 1;
-        } else {
-            flashcard.box = 1; // Reset on failure
-        }
-        // Set the next review date based on the new box level
+        flashcard.box = correct ? flashcard.box + 1 : 1;
         flashcard.nextReview = getNextReviewDate(flashcard.box);
-
         const updatedFlashcard = await flashcard.save();
         res.json(updatedFlashcard);
     } catch (err) {
+        console.error("Error in PUT /flashcards/:id:", err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -77,6 +65,7 @@ router.delete('/:id', async (req, res) => {
         }
         res.json({ message: 'Flashcard deleted' });
     } catch (err) {
+        console.error("Error in DELETE /flashcards/:id:", err);
         res.status(500).json({ error: err.message });
     }
 });
