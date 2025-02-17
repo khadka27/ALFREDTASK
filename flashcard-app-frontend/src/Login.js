@@ -24,7 +24,7 @@ const Login = ({ setToken }) => {
     };
 
     return (
-        <Container className="d-flex justify-content-center align-items-center vh-100">
+        <Container className="d-flex justify-content-center align-items-center vh-100 ">
             <Card className="p-4 shadow-lg border-light" style={{ width: '350px', backgroundColor: '#F9FAFB' }}>
                 <div className="text-center">
                     <img
