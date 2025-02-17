@@ -1,54 +1,71 @@
 // src/Signup.js
 import React, { useState } from 'react';
+import { Form, Button, Card, Container } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const navigate = useNavigate();
 
     const handleSignup = async (e) => {
         e.preventDefault();
+        setError('');
+        setSuccess('');
         try {
             await axios.post('http://localhost:5000/auth/register', { username, password });
-            alert('User registered successfully!');
-            navigate('/login'); // After signup, redirect to login page
+            setSuccess('Account created! Redirecting to login...');
+            setTimeout(() => navigate('/login'), 2000);
         } catch (err) {
-            console.error(err);
-            alert('Signup failed: ' + (err.response?.data?.error || err.message));
+            setError('Username already taken.');
         }
     };
 
     return (
-        <div className="max-w-md mx-auto p-4">
-            <h2 className="text-xl font-bold mb-4">Sign Up</h2>
-            <form onSubmit={handleSignup}>
-                <div className="mb-4">
-                    <label className="block mb-1">Username:</label>
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        className="w-full border rounded px-3 py-2"
-                        required
+        <Container className="d-flex justify-content-center align-items-center vh-100">
+            <Card className="p-4 shadow-lg border-light" style={{ width: '350px', backgroundColor: '#F9FAFB' }}>
+                <div className="text-center">
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg"
+                        alt="profile"
+                        className="rounded-circle mb-3"
+                        style={{ width: '80px', height: '80px' }}
                     />
                 </div>
-                <div className="mb-4">
-                    <label className="block mb-1">Password:</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full border rounded px-3 py-2"
-                        required
-                    />
-                </div>
-                <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-                    Sign Up
-                </button>
-            </form>
-        </div>
+                <h4 className="text-center text-dark mb-3">Create Account</h4>
+                {error && <p className="text-danger text-center">{error}</p>}
+                {success && <p className="text-success text-center">{success}</p>}
+                <Form onSubmit={handleSignup}>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="text"
+                            placeholder="User Name"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Control
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </Form.Group>
+                    <Button type="submit" className="w-100" style={{ backgroundColor: '#1F2937', border: 'none' }}>
+                        Sign Up
+                    </Button>
+                </Form>
+                <p className="text-center mt-3">
+                    Already have an account? <Link to="/login" className="fw-bold">Login</Link>
+                </p>
+            </Card>
+        </Container>
     );
 };
 

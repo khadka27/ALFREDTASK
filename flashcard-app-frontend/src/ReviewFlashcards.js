@@ -1,93 +1,146 @@
-// src/ReviewFlashcards.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Spinner, Card, Button, Alert, Container } from 'react-bootstrap';
 
-const ReviewFlashcards = ({ token }) => {
+const ReviewFlashcards = ({ token, darkMode }) => {
     const [flashcards, setFlashcards] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [showAnswer, setShowAnswer] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    useEffect(() => {
-        fetchFlashcards();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const fetchFlashcards = async () => {
+    const fetchFlashcards = useCallback(async () => {
+        setLoading(true);
+        setError('');
         try {
             const res = await axios.get('http://localhost:5000/flashcards', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
-            // Only include cards due for review (nextReview date <= now)
+            // Filter flashcards due for review (nextReview date <= now)
             const dueFlashcards = res.data.filter(card => new Date(card.nextReview) <= new Date());
             setFlashcards(dueFlashcards);
             setCurrentIndex(0);
             setShowAnswer(false);
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
+            console.error(err);
+            setError('Failed to fetch flashcards.');
+        } finally {
+            setLoading(false);
         }
-    };
+    }, [token]);
+
+    useEffect(() => {
+        fetchFlashcards();
+    }, [fetchFlashcards]);
 
     const handleAnswer = async (correct) => {
-        const card = flashcards[currentIndex];
+        setLoading(true);
+        setError('');
         try {
-            await axios.put(`http://localhost:5000/flashcards/${card._id}`, { correct }, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            // Refresh flashcards list after updating the card
+            const card = flashcards[currentIndex];
+            await axios.put(
+                `http://localhost:5000/flashcards/${card._id}`,
+                { correct },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            // Re-fetch flashcards; resets currentIndex to 0
             await fetchFlashcards();
-            setShowAnswer(false);
-            setCurrentIndex(prevIndex => prevIndex + 1);
-        } catch (error) {
-            console.error(error);
+        } catch (err) {
+            console.error(err);
+            setError('Failed to update flashcard.');
+        } finally {
+            setLoading(false);
         }
     };
 
+    if (loading) {
+        return (
+            <Container className="d-flex justify-content-center align-items-center vh-100" style={{
+                backgroundColor: darkMode ? '#111827' : '#F9FAFB'
+            }}>
+                <Spinner animation="border" variant={darkMode ? "light" : "primary"} />
+            </Container>
+        );
+    }
+
+    if (error) {
+        return <Alert variant="danger" className="text-center mt-4">{error}</Alert>;
+    }
+
     if (flashcards.length === 0 || currentIndex >= flashcards.length) {
-        return <div className="text-center mt-10">No flashcards due for review!</div>;
+        return <Alert variant="info" className="text-center mt-5">No flashcards due for review!</Alert>;
     }
 
     const currentCard = flashcards[currentIndex];
 
     return (
-        <div className="max-w-xl mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-4 text-center">Review Flashcards</h1>
-            <div className="bg-white shadow-md rounded p-6">
-                <h2 className="text-xl font-semibold mb-2">{currentCard.question}</h2>
-                {showAnswer ? (
-                    <>
-                        <p className="mb-4">{currentCard.answer}</p>
-                        <div className="flex justify-around">
-                            <button
-                                onClick={() => handleAnswer(true)}
-                                className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
-                            >
-                                Got it right
-                            </button>
-                            <button
-                                onClick={() => handleAnswer(false)}
-                                className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
-                            >
-                                Got it wrong
-                            </button>
-                        </div>
-                    </>
-                ) : (
-                    <button
-                        onClick={() => setShowAnswer(true)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
-                    >
-                        Show Answer
-                    </button>
-                )}
-            </div>
-            <div className="text-center mt-4">
+        <Container className="mt-4" style={{
+            backgroundColor: darkMode ? '#111827' : '#F9FAFB',
+            minHeight: '100vh',
+            color: darkMode ? '#F3F4F6' : '#1F2937'
+        }}>
+            <h1 className="text-center mb-4">📚 Review Flashcards</h1>
+            <AnimatePresence>
+                <motion.div
+                    key={currentCard._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="d-flex justify-content-center"
+                >
+                    <Card className="shadow-lg text-center p-4" style={{
+                        maxWidth: '500px',
+                        width: '100%',
+                        backgroundColor: darkMode ? '#1E293B' : '#FFFFFF',
+                        border: `1px solid ${darkMode ? '#374151' : '#E5E7EB'}`,
+                        color: darkMode ? '#F3F4F6' : '#1F2937'
+                    }}>
+                        <Card.Body>
+                            <Card.Title className="fw-bold">{currentCard.question}</Card.Title>
+                            {showAnswer ? (
+                                <>
+                                    <Card.Text className="mt-3">{currentCard.answer}</Card.Text>
+                                    <div className="d-flex justify-content-between">
+                                        <Button
+                                            onClick={() => handleAnswer(true)}
+                                            style={{
+                                                backgroundColor: darkMode ? '#34D399' : '#10B981',
+                                                border: 'none'
+                                            }}
+                                        >
+                                            ✅ Got it right
+                                        </Button>
+                                        <Button
+                                            variant="danger"
+                                            onClick={() => handleAnswer(false)}
+                                        >
+                                            ❌ Got it wrong
+                                        </Button>
+                                    </div>
+                                </>
+                            ) : (
+                                <Button
+                                    onClick={() => setShowAnswer(true)}
+                                    style={{
+                                        backgroundColor: darkMode ? '#60A5FA' : '#3B82F6',
+                                        border: 'none'
+                                    }}
+                                >
+                                    Show Answer
+                                </Button>
+                            )}
+                        </Card.Body>
+                    </Card>
+                </motion.div>
+            </AnimatePresence>
+            <p className="text-center mt-3">
                 {flashcards.length - currentIndex - 1} flashcard(s) left for review.
-            </div>
-        </div>
+            </p>
+        </Container>
     );
 };
 

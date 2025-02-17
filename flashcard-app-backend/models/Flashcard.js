@@ -1,4 +1,3 @@
-// models/Flashcard.js
 const mongoose = require('mongoose');
 
 const FlashcardSchema = new mongoose.Schema({
@@ -8,6 +7,8 @@ const FlashcardSchema = new mongoose.Schema({
     box: { type: Number, default: 1 },
     // nextReview stores the date when the card is due for review
     nextReview: { type: Date, default: Date.now },
+    // Associate this flashcard with a user
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
 module.exports = mongoose.model('Flashcard', FlashcardSchema);
