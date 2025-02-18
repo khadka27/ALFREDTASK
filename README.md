@@ -82,8 +82,8 @@ flashlearn/
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/yourusername/flashlearn.git
-   cd flashlearn/flashcard-app-backend
+   git clone https://github.com/khadka27/ALFREDTASK.git
+   cd ALFREDTASK/flashcard-app-backend
    ```
 
 2. **Install Dependencies:**
