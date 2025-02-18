@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import "bootstrap/dist/css/bootstrap.min.css";
 
 const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
     const [question, setQuestion] = useState('');
@@ -8,7 +7,6 @@ const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const backendUrl = process.env.BACKEND_URL;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,10 +14,11 @@ const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
         setError('');
         setSuccess('');
 
+        console.log("Token being sent:", token); // Debug log
+
         try {
-            // Include the token in the Authorization header
             const res = await axios.post(
-                `${backendUrl}/ flashcards`,
+                `${process.env.REACT_APP_BACKEND_URL}/flashcards`,
                 { question, answer },
                 {
                     headers: {
@@ -39,24 +38,28 @@ const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
         }
     };
 
+
     return (
-        <div className={`container mt - 4 ${darkMode ? 'text-light' : 'text-dark'}`}>
-            <div
-                className={`card shadow - lg border ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-white border-light'
-                    }`}
-            >
+        <div className={`container mt-4 ${darkMode ? 'text-light' : 'text-dark'}`}>
+            <div className={`card shadow-lg border ${darkMode ? 'bg-dark text-light border-secondary' : 'bg-white border-light'}`}>
+                {/* Card Header */}
                 <div
-                    className="card-header"
+                    className="card-header text-center"
                     style={{
                         backgroundColor: darkMode ? '#1E293B' : '#3B82F6',
                         color: darkMode ? '#F3F4F6' : '#FFFFFF',
                     }}
                 >
-                    <h2 className="text-center m-0">Add New Flashcard</h2>
+                    <h2 className="m-0">Add New Flashcard</h2>
                 </div>
+
+                {/* Card Body */}
                 <div className="card-body">
-                    {error && <div className="alert alert-danger">{error}</div>}
-                    {success && <div className="alert alert-success">{success}</div>}
+                    {/* Alerts for errors/success messages */}
+                    {error && <div className="alert alert-danger text-center">{error}</div>}
+                    {success && <div className="alert alert-success text-center">{success}</div>}
+
+                    {/* Form */}
                     <form onSubmit={handleSubmit}>
                         <div className="mb-3">
                             <label className="form-label fw-bold">Question:</label>
@@ -64,8 +67,7 @@ const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
                                 type="text"
                                 value={question}
                                 onChange={(e) => setQuestion(e.target.value)}
-                                className={`form - control ${darkMode ? 'bg-dark text-light border-secondary' : 'border-light'
-                                    }`}
+                                className={`form-control ${darkMode ? 'bg-dark text-light border-secondary' : 'border-light'}`}
                                 required
                             />
                         </div>
@@ -74,12 +76,13 @@ const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
                             <textarea
                                 value={answer}
                                 onChange={(e) => setAnswer(e.target.value)}
-                                className={`form - control ${darkMode ? 'bg-dark text-light border-secondary' : 'border-light'
-                                    }`}
+                                className={`form-control ${darkMode ? 'bg-dark text-light border-secondary' : 'border-light'}`}
                                 rows="3"
                                 required
                             />
                         </div>
+
+                        {/* Submit Button */}
                         <div className="text-center">
                             <button type="submit" className="btn btn-primary w-100" disabled={loading}>
                                 {loading ? 'Adding...' : 'Add Flashcard'}
@@ -89,6 +92,7 @@ const AddFlashcard = ({ onFlashcardAdded, darkMode, token }) => {
                 </div>
             </div>
         </div>
+
     );
 };
 

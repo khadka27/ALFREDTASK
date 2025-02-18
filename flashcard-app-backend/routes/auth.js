@@ -2,8 +2,11 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+require('dotenv').config();
 
-const JWT_SECRET = process.env.JWT_SECRET || ''; // Ideally, set this in your .env
+
+const JWT_SECRET = process.env.JWT_SECRET || 'yoursecret';
+// Ideally, set this in your .env
 
 // POST /auth/register → Register a new user
 router.post('/register', async (req, res) => {

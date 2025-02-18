@@ -10,14 +10,13 @@ const Signup = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
-    const backendUrl = process.env.BACKEND_URL;
 
     const handleSignup = async (e) => {
         e.preventDefault();
         setError('');
         setSuccess('');
         try {
-            await axios.post(`${backendUrl}/auth/register`, { username, password });
+            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/register`, { username, password });
             setSuccess('Account created! Redirecting to login...');
             setTimeout(() => navigate('/login'), 2000);
         } catch (err) {

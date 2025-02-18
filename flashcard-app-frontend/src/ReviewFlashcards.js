@@ -9,13 +9,13 @@ const ReviewFlashcards = ({ token, darkMode }) => {
     const [showAnswer, setShowAnswer] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const backendUrl = process.env.BACKEND_URL;
+    const backend = process.env.REACT_APP_BACKEND_URL;
 
     const fetchFlashcards = useCallback(async () => {
         setLoading(true);
         setError('');
         try {
-            const res = await axios.get(`process.env.BACKEND_URL/flashcards`, {
+            const res = await axios.get(`${backend}/flashcards`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             // Filter flashcards due for review (nextReview date <= now)
@@ -41,7 +41,7 @@ const ReviewFlashcards = ({ token, darkMode }) => {
         try {
             const card = flashcards[currentIndex];
             await axios.put(
-                `${backendUrl}/flashcards/${card._id}`,
+                `${backend}/flashcards/${card._id}`,
                 { correct },
                 {
                     headers: { Authorization: `Bearer ${token}` },
